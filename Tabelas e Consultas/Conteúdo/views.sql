@@ -1,0 +1,140 @@
+-- Views: Usado para criar visões de tabelas diferentes sem a necessidade de uso dos joins
+
+create view cliente_profissao as 
+Select 
+	cln.nome as cliente,
+	cln.cpf,
+	prf.nome as profissao 
+from 
+	cliente cln 
+left outer join 
+	profissao prf on cln.idprofissao = prf.idprofissao;
+
+-- Usando uma View
+select cliente from cliente_profissao where profissao = 'Professor';
+select * from cliente_profissao;
+
+-- excluindo a view
+drop view cliente_profissao;
+
+-- VIEW
+
+-- 1. O nome, a profissão, a nacionalidade, o complemento, o município, a unidade de federação, o bairro, o CPF,o RG, a data de nascimento, 
+-- o gênero (mostrar “Masculino” ou “Feminino”), o logradouro, o número e as observações dos clientes.
+select * from cliente;
+CREATE VIEW CLIENTE_INFOS AS
+SELECT 
+	CLN.NOME AS CLIENTE,
+	COALESCE(NCN.NOME, 'Não Informada') AS NACIONALIDADE,
+	CASE CLN.GENERO 
+		WHEN 'M' THEN 'Masculino'
+		WHEN 'F' THEN 'Feminino'
+	END AS GENERO,
+	COALESCE(PRF.NOME, 'Não Informado') AS PROFISSAO,
+	COALESCE(CLN.CPF, 'Não Informado') AS CPF,
+	COALESCE(CLN.RG, 'Não Informado') AS RG,
+	COALESCE(CLN.DATA_NASCIMENTO::TEXT, 'Não Informado') AS "data nascimento",
+	COALESCE(BRR.NOME, 'Não informado') AS BAIRRO,
+	COALESCE(CLN.NUMERO, 'Não informado') AS NUMERO,
+	COALESCE(CPL.NOME, 'Não informado') AS COMPLEMENTO,
+	COALESCE(CLN.LOGRADOURO, 'Não Informado') AS LOGRADOURO,
+	COALESCE(MNC.NOME, 'Não Informado') AS MUNICIPIO,
+	COALESCE(UF.SIGLA, 'Não Informado') AS UF,
+	COALESCE(CLN.OBSERVACOES, 'Não apresentado') AS OBSERVACAO
+FROM 
+	CLIENTE CLN
+LEFT OUTER JOIN
+	NACIONALIDADE NCN ON CLN.IDNACIONALIDADE = NCN.IDNACIONALIDADE
+LEFT OUTER JOIN
+	BAIRRO BRR ON CLN.IDBAIRRO = BRR.IDBAIRRO
+LEFT OUTER JOIN
+	COMPLEMENTO CPL ON CLN.IDCOMPLEMENTO = CPL.IDCOMPLEMENTO
+LEFT OUTER JOIN
+	MUNICIPIO MNC ON CLN.IDMUNICIPIO = MNC.IDMUNICIPIO
+LEFT OUTER JOIN
+	UF ON MNC.IDUF = UF.IDUF
+LEFT OUTER JOIN
+	PROFISSAO PRF ON CLN.IDPROFISSAO = PRF.IDPROFISSAO;
+
+-- EXIBINDO A VIEW
+SELECT * FROM CLIENTE_INFOS;
+	
+-- 2. O nome do município e o nome e a sigla da unidade da federação.
+CREATE VIEW MUNICIPIO_UF AS
+SELECT
+	MNC.NOME AS MUNICIPIO,
+	UF.NOME AS UF
+FROM
+	MUNICIPIO MNC
+LEFT JOIN 
+	UF ON MNC.IDUF = UF.IDUF;
+
+-- EXIBINDO A VIEW
+SELECT * FROM MUNICIPIO_UF;
+
+-- 3. O nome do produto, o valor e o nome do fornecedor dos produtos.
+CREATE VIEW PRODUTO_FORNECEDOR AS
+SELECT
+	PRD.NOME AS PRODUTO,
+	FRN.NOME AS FORNECEDOR,
+	'R$ ' || PRD.VALOR AS PRECO
+FROM 
+	PRODUTO PRD
+LEFT JOIN
+	FORNECEDOR FRN ON PRD.IDFORNECEDOR = FRN.IDFORNECEDOR;
+
+-- EXIBINDO A VIEW
+SELECT * FROM PRODUTO_FORNECEDOR;
+
+-- 4. O nome da transportadora, o logradouro, o número, o nome da unidade de federação e a sigla da unidade de federação das transportadoras.
+CREATE VIEW TRANSPORTADORA_UF AS
+SELECT
+	TRN.NOME AS TRANSPORTADORA,
+	TRN.LOGRADOURO,
+	TRN.NUMERO,
+	UF.NOME AS UF,
+	UF.SIGLA AS SIGLA
+FROM
+	TRANSPORTADORA TRN
+LEFT OUTER JOIN
+	MUNICIPIO MNC ON TRN.IDMUNICIPIO = MNC.IDMUNICIPIO
+LEFT OUTER JOIN
+	UF ON MNC.IDUF = UF.IDUF;
+
+-- EXIBINDO A VIEW
+SELECT * FROM TRANSPORTADORA_UF;
+
+-- 5. A data do pedido, o valor, o nome da transportadora, o nome do cliente e o nome do vendedor dos pedidos.
+CREATE VIEW PEDIDO_INFOS AS
+SELECT 
+	PDD.DATA_PEDIDO,
+	'R$ ' || PDD.VALOR AS PRECO,
+	COALESCE(TRN.NOME, 'Não informado') AS TRANSPORTADORA,
+	CLN.NOME AS CLIENTE,
+	VDD.NOME AS VENDEDOR
+FROM
+	PEDIDO PDD
+LEFT OUTER JOIN
+	TRANSPORTADORA TRN ON PDD.IDTRANSPORTADORA = TRN.IDTRANSPORTADORA
+LEFT OUTER JOIN 
+	CLIENTE CLN ON PDD.IDCLIENTE = CLN.IDCLIENTE
+LEFT OUTER JOIN
+	VENDEDOR VDD ON PDD.IDVENDEDOR = VDD.IDVENDEDOR;
+
+-- EXIBINDO A VIEW
+SELECT * FROM PEDIDO_INFOS;
+
+-- 6. O nome do produto, a quantidade, o valor unitário e o valor total dos produtos do pedido.
+CREATE VIEW PEDIDO_VALORES AS
+SELECT
+	PDP.IDPEDIDO,
+	STRING_AGG(PRD.NOME, ', ') AS PRODUTO, -- AGRUPA OS NOMES DOS PRODUTOS EM UMA ÚNICA STRING
+	SUM(PDP.QUANTIDADE * PDP.VALOR_UNITARIO) AS VALOR_TOTAL -- CALCULA O VALOR TOTAL DO PEDIDO
+FROM
+	PRODUTO PRD
+LEFT JOIN
+	PEDIDO_PRODUTO PDP ON PRD.IDPRODUTO = PDP.IDPRODUTO
+GROUP BY
+	PDP.IDPEDIDO; -- AGRUPA POR IDPEDIDO PARA CALCULAR O VALOR TOTAL POR PEDIDO
+-- EXIBINDO A VIEW
+SELECT * FROM PEDIDO_VALORES;
