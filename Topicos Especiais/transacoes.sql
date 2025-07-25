@@ -1,0 +1,27 @@
+-- Transacoes: Importissimo para garantir a concistência dos dados
+
+CREATE TABLE CONTA (
+	IDCONTA SERIAL NOT NULL,
+	CLIENTE NOME_MEDIO NOT NULL, -- Deveria ser id, mas usamos string para facilitar a visualização dos dados
+	SALDO MOEDA NOT NULL DEFAULT 0,
+
+	CONSTRAINT PK_CNT_IDCONTA PRIMARY KEY (IDCONTA)
+);
+
+INSERT INTO CONTA (CLIENTE, SALDO) VALUES ('CLIENTE 1', 1000);
+INSERT INTO CONTA (CLIENTE, SALDO) VALUES ('CLIENTE 2', 500);
+
+SELECT * FROM CONTA;
+
+-- Objetivo: Transferência de R$100 entre as contas
+-- CANCELAR UM COMANDO = ROLLBACK
+
+BEGIN;
+UPDATE CONTA SET SALDO = SALDO - 100 WHERE IDCONTA = 1;
+UPDATE CONTA SET SALDO = SALDO + 100 WHERE IDCONTA = 2;
+ROLLBACK; -- cancela os últimos comandos de alterações
+
+BEGIN;
+UPDATE CONTA SET SALDO = SALDO - 100 WHERE IDCONTA = 1;
+UPDATE CONTA SET SALDO = SALDO + 100 WHERE IDCONTA = 2;
+COMMIT; -- Confirma as alterações
