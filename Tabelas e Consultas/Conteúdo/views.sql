@@ -15,7 +15,7 @@ select cliente from cliente_profissao where profissao = 'Professor';
 select * from cliente_profissao;
 
 -- excluindo a view
-drop view cliente_profissao;
+-- drop view cliente_profissao;
 
 -- VIEW
 
