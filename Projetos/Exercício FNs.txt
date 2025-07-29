@@ -1,0 +1,32 @@
+Resolução e Reorganização das tabelas com base nas FNs
+Acesse a imagem e reorganize a tabela de acordo com as Formas Normais (FN)
+Link: https://img-c.udemycdn.com/redactor/raw/article_lecture/2023-02-10_17-13-47-63e023aa02357b3e2ec4c15ababd836b.jpg
+
+Default:
+Pedidos -> N° Pedido, IdVendedor, Vendedor, Idcliente, Cliente, endereço, cgc, idproduto, quantidade, descricao, valor_total
+
+
+
+Aplicando a 1FN
+Endereço -> IdEndereço (PK), tipo_logradouro, logradouro
+
+-------------------
+Aplicando 2FN e 3FN
+Pedido -> n° pedido (PK), codigo vendedor (FK), codigo cliente (FK), código produto (PK), quantidade, valor_total 
+Vendedor -> Código vendedor (PK), nome
+Cliente -> Código cliente (PK), nome, idendereco, cgc
+Produto -> Código produto (PK), descricao, valor 
+Endereco -> Idendereco (PK), tipo_logradouro, logradouro
+
+----------------------------------
+Aplicando a 4FN
+Pedido_Produto -> n° pedido (PK/FK), codigo produto (PK/FK), quantidade, valor total
+
+
+-- Resultado final
+Pedido -> n° pedido (PK), codigo vendedor (FK), codigo cliente (FK) 
+Pedido_Produto -> n° pedido (PK/FK), codigo produto (PK/FK), quantidade, valor total
+Vendedor -> Código vendedor (PK), nome
+Cliente -> Código cliente (PK), nome, idendereco, 
+Produto -> Código produto (PK), descricao, valor 
+Endereco -> Idendereco (PK), tipo_logradouro, logradouro
