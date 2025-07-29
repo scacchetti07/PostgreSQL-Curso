@@ -1,2 +1,0 @@
-https://app.brmodeloweb.com/#!/conceptual/6883e75e21088a496b043fea
-https://app.brmodeloweb.com/#!/logic/%7B%22modelid%22:%226883efdc21088a496b044099%22,%22conversionId%22:%22%22%7D
